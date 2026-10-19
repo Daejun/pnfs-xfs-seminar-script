@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>대본</title>
+<style>
+:root { --bg: #f3f5f6; --fg: #15212b; --fg2: #4a5864; --rule: #c9d2d8; --bar: #ffffffee; --accent: #5b3f9a; --chip: #e6eaed; --fs: 19px; --head: 64px; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121a21; --fg: #e6ecf0; --fg2: #a9b6c0; --rule: #2d3b46; --bar: #121a21ee; --accent: #b9a2e6; --chip: #1d2832; color-scheme: dark; } }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: var(--fs)/1.75 Pretendard, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  word-break: keep-all; overflow-wrap: break-word; text-wrap: pretty; }
+header { position: sticky; top: 0; z-index: 10; background: var(--bar); backdrop-filter: blur(6px); border-bottom: 1px solid var(--rule);
+  padding: max(8px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px));
+  display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 15px; }
+header button, header a, header input { font: inherit; color: var(--fg); background: var(--chip); border: 1px solid var(--rule); border-radius: 8px; min-height: 38px; padding: 0 11px; text-decoration: none; display: inline-flex; align-items: center; }
+header input { width: 4.2em; text-align: center; font-variant-numeric: tabular-nums; }
+header .of { color: var(--fg2); }
+header .sp { flex: 1; }
+header button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+main { max-width: 46rem; margin: 0 auto; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 40vh max(16px, env(safe-area-inset-left, 0px)); }
+h1 { font-size: 1.35em; line-height: 1.3; margin: 1.4em 0 .4em; color: var(--accent); }
+h2 { font-size: 1.05em; line-height: 1.4; margin: 1.6em 0 .4em; padding-top: .6em; border-top: 2px solid var(--rule); scroll-margin-top: calc(var(--head) + 4px); }
+h1 { scroll-margin-top: calc(var(--head) + 4px); }
+p { margin: 0 0 .7em; }
+p > strong:first-child { display: inline-block; min-width: 2.2em; margin-right: .3em; padding: 0 .35em; border-radius: 6px; background: var(--chip); color: var(--accent); text-align: center; font-variant-numeric: tabular-nums; }
+code { font-family: ui-monospace, 'JetBrains Mono', monospace; font-size: .9em; }
+a { color: var(--accent); }
+</style>
+</head><body>
+<header>
+  <button id="prev" aria-label="이전 slide">◀</button>
+  <input id="no" type="number" inputmode="numeric" min="1" max="65" aria-label="slide 번호"><span class="of">/ 65</span>
+  <button id="next" aria-label="다음 slide">▶</button>
+  <span class="sp"></span>
+  <a href="#appendix">부록</a><a href="#faq">질문</a>
+  <button id="smaller" aria-label="글자 작게">가−</button><button id="bigger" aria-label="글자 크게">가+</button>
+  <button id="wake" aria-pressed="false">화면 켜 둠</button>
+</header>
+<main>
+<h1 id="대본-xfs-위의-pnfs-block-layout">대본: XFS 위의 pNFS block
+layout</h1>
+<p>번호는 발표 화면의 slide 번호, 굵은 [k]는 그 slide에서 k번째 클릭
+뒤에 할 말이다. 수치는 화면에 있는 것만 말한다.</p>
+<p>조작: → 또는 space 다음 클릭, ← 이전 클릭, PageDown/PageUp(clicker)도
+같다. mouse wheel은 아래로 다음 클릭, 위로 이전 클릭(한 번 굴림에 한
+단계). 마우스는 펜이다(처음부터 켜져 있음). p 펜 켜고 끄기, c 그린 것
+지우기, Ctrl+Z 되돌리기, 1~7 색, Esc 펜 끄기. 펜을 끈 뒤 o 전체 목록, g
+번호로 가기.</p>
+<h2 id="n1">1. s01 XFS 위의 pNFS block layout (0.5분, 끝나면 누적
+0.5분)</h2>
+<p><strong>[0]</strong> 이 구성은 어떤 workload에 맞을까요? pNFS는
+NFSv4.1의 확장입니다. client가 data를 server를 거치지 않고 device에 직접
+씁니다. MDS는 metadata를 맡는 server입니다. 근거는 둘, kernel code와 VM
+실험입니다.</p>
+<h2 id="n2">2. s02 여러 AI node, file system 하나 (1분, 끝나면 누적
+1.5분)</h2>
+<p><strong>[0]</strong> 이런 구성을 생각해 봅니다. 학습 node 여러 대가
+file system 하나를 같이 씁니다. 모든 node가 같은 file을 봅니다.</p>
+<p><strong>[1]</strong> 이 storage에 오는 일은 셋입니다. 첫째, 큰
+dataset을 읽습니다. 둘째, checkpoint입니다. 학습 도중의 model 상태를 큰
+file로 쓰고 끝에 fsync합니다. 셋째, 추론의 KV cache를 file로 자주 쓰고
+지웁니다.</p>
+<p><strong>[2]</strong> 그래서 오늘의 질문은 이것입니다. 이 storage로
+pNFS block layout은 맞을까요? 답은 workload에 따라 갈립니다.</p>
+<h2 id="n3">3. s03 layout과 data 경로 (2.5분, 끝나면 누적 4분)</h2>
+<p><strong>[0]</strong> 화면에 넷이 있습니다. 왼쪽에 client 둘, 가운데
+MDS, 오른쪽에 모두가 같이 보는 device입니다. MDS는 metadata server의
+줄임말입니다. file의 이름과 크기, block 할당과 위치를 맡습니다. 여기서는
+Linux의 nfsd와 그 아래의 XFS입니다. pNFS는 NFSv4.1에 들어 있는
+확장입니다. client가 data를 MDS를 거치지 않고 device에 직접 읽고 쓰게
+합니다.</p>
+<p><strong>[1]</strong> 먼저 layout이 없는 보통의 NFS입니다. 주황색
+data가 전부 MDS를 지나죠. MDS가 client 대신 device에 씁니다.</p>
+<p><strong>[2]</strong> layout을 받으면 달라집니다. client는 MDS에
+어디에 쓸지만 묻습니다. data는 device로 바로 갑니다. 그럼 MDS에는 무엇이
+남을까요? block 할당, metadata 변경, 그리고 그것을 log에 남기는
+일입니다. 이 남는 일이 오늘 볼 비용입니다.</p>
+<p><strong>[3]</strong> 연결은 셋입니다. client와 MDS 사이의 control
+link, client와 device 사이의 data link, MDS와 device 사이의 link입니다.
+실험은 이 넷을 한 host 안의 VM으로 만들었습니다. 세 연결이 모두 가상
+network라 속도의 비가 실제 장비와 다릅니다. 그래서 오늘은 속도 이야기가
+아닙니다. 횟수와 순서, 대조군과의 비를 봅니다.</p>
+<h2 id="n4">4. s04 먼저 답 (1.5분, 끝나면 누적 5.5분)</h2>
+<p><strong>[0]</strong> 답을 먼저 드리겠습니다. 큰 file을 client마다
+따로 읽고 쓰면 맞습니다. MDS의 일이 거의 없기 때문입니다. 약한 곳은 세
+칸입니다.</p>
+<p><strong>[1]</strong> 첫째, 비용입니다. layout을 쓰면 data는 MDS를
+지나지 않습니다. 그런데 MDS의 일은 bytes가 아니라 횟수를 따릅니다.
+file을 여는 횟수, fsync 횟수, file이 조각난 정도입니다. 큰 file을 client
+하나가 다루면 그 일이 거의 없고, 작은 file이 많으면 커집니다.</p>
+<p><strong>[2]</strong> 둘째, 공유입니다. 두 client가 한 file에 쉬지
+않고 계속 I/O를 내면, 읽기끼리라도 한쪽이 거의 쓰지 못했습니다.</p>
+<p><strong>[3]</strong> 셋째, 장애입니다. fsync가 성공했는데 data가
+0으로 읽힌 경우가 있었습니다. 이 세 칸을 보이려면 각 component가 어떻게
+움직이는지 알아야 합니다. 그래서 pNFS와 XFS의 기본 작동부터
+보겠습니다.</p>
+<h2 id="n5">5. n1 pNFS의 component (0.25분, 끝나면 누적 5.75분)</h2>
+<p><strong>[0]</strong> 먼저 pNFS입니다. client와 MDS의 nfsd 사이에
+무엇이 오갈까요? 그것부터 보겠습니다.</p>
+<h2 id="n6">6. s05 layout이란 (1.5분, 끝나면 누적 7.25분)</h2>
+<p><strong>[0]</strong> 오늘 가장 많이 나올 낱말이 layout입니다.
+이것부터 정의하겠습니다.</p>
+<p><strong>[1]</strong> 위가 file, 아래가 device입니다. 파란 점선이
+file의 이 범위가 device의 어느 block에 있는지를 잇습니다. 이 대응의
+목록이 layout의 몸통입니다. 한 덩어리를 extent라고 부르고, MDS에서는
+XFS가 이 목록을 만들어 줍니다.</p>
+<p><strong>[2]</strong> 여기에 권한이 붙습니다. 읽기만 하는 READ, 읽고
+쓰는 RW입니다. RW layout을 받은 client는 그 block에 직접 씁니다.</p>
+<p><strong>[3]</strong> 마지막으로 file을 닫으면 돌려준다는 표시가
+붙습니다. Linux server는 이 표시를 늘 켜서 보냅니다. code로
+확인했습니다. layout은 두 번 더 나옵니다. 4막에서 write 하나를 따라갈
+때, 6막에서 두 client가 다툴 때입니다.</p>
+<h2 id="n7">7. s06 layout type 셋 (1.5분, 끝나면 누적 8.75분)</h2>
+<p><strong>[0]</strong> Linux nfsd가 내주는 layout type은 셋입니다.</p>
+<p><strong>[1]</strong> block과 SCSI는 client가 shared device에 직접
+bio를 냅니다. flexfiles는 다릅니다. device가 아니라 같은 server에 NFSv3
+RPC로 data를 보냅니다.</p>
+<p><strong>[2]</strong> export op는 nfsd가 filesystem에 부르는
+함수입니다. block은 셋, SCSI는 둘을 부릅니다. 기준 tree에서 이 함수를
+가진 filesystem은 XFS 하나뿐입니다. 그래서 오늘은 XFS 위의 block과
+SCSI만 봅니다.</p>
+<p><strong>[3]</strong> 함정이 하나 있습니다. layout이 쓰이려면 아래 네
+조건이 다 맞아야 합니다. 하나라도 어긋나면 error 없이 I/O가 MDS로
+갑니다. mount 정보에 pnfs가 보여도 driver 설정일 뿐입니다. 9막에서 RPC
+수로 확인하라고 다시 말씀드리겠습니다. 조건의 대부분은 code로
+확인했습니다.</p>
+<h2 id="n8">8. s07 operation 넷과 recall (2분, 끝나면 누적 10.75분)</h2>
+<p><strong>[0]</strong> layout 하나가 오가는 순서를 따라가
+보겠습니다.</p>
+<p><strong>[1]</strong> 처음 쓰려는 순간, client가 LAYOUTGET으로 그
+범위의 block 위치를 받습니다. OPEN에 싣지 않고 첫 I/O 때 보냅니다. MDS
+안에서는 XFS의 map_blocks가 답합니다.</p>
+<p><strong>[2]</strong> layout은 device를 ID로 가리킵니다. 처음 보는
+ID면 GETDEVICEINFO로 그 device가 무엇인지 묻습니다. block layout이면
+XFS의 get_uuid가 답합니다.</p>
+<p><strong>[3]</strong> 이제 client가 device에 직접 읽고 씁니다. 이 동안
+MDS는 아무것도 모릅니다.</p>
+<p><strong>[4]</strong> 다 쓰면 LAYOUTCOMMIT으로 쓴 범위와 새 file
+size를 알립니다. 이때 XFS의 commit_blocks가 그 block을 읽을 수 있는
+상태로 바꿉니다. 이 말은 3막에서 다시 풀겠습니다.</p>
+<p><strong>[5]</strong> 다 쓴 layout은 LAYOUTRETURN으로 돌려줍니다. 보통
+CLOSE에 실어 보내죠. 그런데 MDS가 먼저 돌려 달라고 할 때가 있습니다. 그
+callback이 CB_LAYOUTRECALL, 줄여서 recall입니다. client는 받으면
+LAYOUTRETURN으로 돌려줍니다.</p>
+<h2 id="n9">9. s08 layout의 상태: stateid, file lease, client lease
+(1.5분, 끝나면 누적 12.25분)</h2>
+<p><strong>[0]</strong> MDS는 layout에 대해 무엇을 기억할까요?
+셋입니다.</p>
+<p><strong>[1]</strong> 첫째, stateid입니다. client와 file의 짝마다
+하나입니다. 기억하는 것은 어느 범위를 어떤 권한으로 줬는지뿐입니다. 내준
+block 목록은 기억하지 않습니다.</p>
+<p><strong>[2]</strong> 둘째, file lease입니다. layout을 처음 내줄 때
+MDS가 그 file에 걸어 둡니다. 누가 그 file을 바꾸려 하면 MDS가 먼저
+압니다. 그 연산은 layout이 돌아올 때까지 최대 45초를 기다립니다. 충돌은
+file 단위로만 따집니다. 범위와 iomode는 보지 않습니다. code로
+확인했습니다.</p>
+<p><strong>[3]</strong> 셋째, client lease입니다. client는 90초 안에
+갱신해야 하고, 못 하면 MDS가 그 client의 상태를 버릴 수 있습니다. 이름은
+비슷하지만 둘은 다른 것입니다. 7막에서 두 timer가 섞인 숫자가
+나옵니다.</p>
+<h2 id="n10">10. s09 recall의 계기 (1.5분, 끝나면 누적 13.75분)</h2>
+<p><strong>[0]</strong> 그럼 recall은 언제 일어날까요?</p>
+<p><strong>[1]</strong> 계기는 둘입니다. 하나는 MDS에서 그 file을 바꾸는
+연산입니다. write, fallocate, size를 바꾸는 setattr 같은 것이죠. 다른
+하나는 다른 client의 LAYOUTGET입니다. 아래 회색 글, 읽기와 지우기와 이름
+바꾸기는 계기가 아닙니다. 지우기가 빠지는 것은 block 해제가 마지막
+참조가 사라질 때까지 미뤄지기 때문입니다.</p>
+<p><strong>[2]</strong> 계기에 따라 기다리는 방식이 다릅니다. MDS에서
+file을 바꾸는 연산이면 file lease를 통해 recall을 보냅니다. 그 연산은
+layout이 돌아오거나 45초가 지날 때까지 기다립니다. 다른 client의
+LAYOUTGET이면 file lease를 거치지 않습니다. 요청한 쪽은 거부를 받고 다시
+요청합니다. 이쪽에는 45초 timer가 없습니다. 그동안 그 file의 LAYOUTGET은
+전부 거부됩니다.</p>
+<h2 id="n11">11. s10 block과 SCSI: 찾는 법, 막는 법 (1분, 끝나면 누적
+14.75분)</h2>
+<p><strong>[0]</strong> 두 type은 어디서 갈릴까요? 두 군데입니다.</p>
+<p><strong>[1]</strong> 첫째, device를 찾는 법입니다. block은 device
+안에 적힌 표식을 client의 daemon이 찾아 맞춥니다. SCSI는 device ID와
+등록한 key로 찾습니다.</p>
+<p><strong>[2]</strong> 둘째, 말을 듣지 않는 client를 막는 법입니다.
+SCSI는 device의 reservation에서 그 client의 key를 지워 쓰기를 막으려
+합니다. 이것을 fence라고 부릅니다. block에는 막을 수단이 없습니다.
+7막에서 둘 다 실제로 해 봅니다.</p>
+<h2 id="n12">12. s11 client I/O의 세 갈래 (1분, 끝나면 누적
+15.75분)</h2>
+<p><strong>[0]</strong> client의 I/O 하나는 세 길로 갈립니다.</p>
+<p><strong>[1]</strong> 위쪽 길입니다. layout이 있으면 extent를 찾아
+device로 bio를 냅니다. 끝나면 끝난 것으로 표시하고, LAYOUTCOMMIT은
+나중에 보냅니다.</p>
+<p><strong>[2]</strong> 가운데 길입니다. 충돌이나 server 재기동 직후처럼
+지금은 못 준다는 error를 받으면, 기다렸다 다시 묻기만 합니다. 간격은
+0.1초에서 두 배씩 15초까지 늘고, MDS로는 가지 않습니다. 6막에서 이것이
+문제가 됩니다.</p>
+<p><strong>[3]</strong> 아래쪽 길입니다. layout을 못 받거나, device를 못
+열거나, bio가 error면 MDS로 돌아갑니다.</p>
+<h2 id="n13">13. n2 XFS의 component (0.25분, 끝나면 누적 16분)</h2>
+<p><strong>[0]</strong> 이제 MDS 안의 XFS입니다. XFS는 block을 어디에,
+언제, 어떤 상태로 잡을까요?</p>
+<h2 id="n14">14. s12 AG와 free space (1.5분, 끝나면 누적 17.5분)</h2>
+<p><strong>[0]</strong> XFS는 device를 어떻게 나눠 쓸까요? 뒤에서 file이
+쪼개지는 이야기를 하려면 이 그림이 필요합니다.</p>
+<p><strong>[1]</strong> device는 같은 크기의 AG로 나뉩니다. AG마다
+빈자리를 두 가지로 정리해 둡니다. block 번호순과 길이순입니다. 가장 긴
+빈자리의 길이도 따로 적어 둡니다. 기억하실 것은 하나입니다. 할당 한 번은
+한 AG 안에서 끝나고, 여러 AG에 걸치지 않습니다.</p>
+<p><strong>[2]</strong> file의 inode는 parent directory가 있는 AG에
+자리를 잡습니다. 첫 data는 그 inode 근처부터 찾습니다.</p>
+<p><strong>[3]</strong> 그러면 여러 client가 한 directory에 file을
+만들면 어떻게 될까요? MDS의 할당이 그 directory의 AG에 먼저 모입니다.
+5막에서 file이 쪼개지는 이야기로 이어집니다. 여기까지는 code로
+확인했습니다.</p>
+<h2 id="n15">15. s13 extent와 unwritten (1.5분, 끝나면 누적 19분)</h2>
+<p><strong>[0]</strong> 이번에는 file 하나를 들여다봅니다. 위가 file의
+offset, 아래가 device의 block입니다.</p>
+<p><strong>[1]</strong> file의 data가 어디 있는지는 extent라는 record의
+목록에 적힙니다. record 하나는 네 값입니다. file의 어디가, device의
+어디에, 얼마나 길게, 어떤 상태로 있는지입니다.</p>
+<p><strong>[2]</strong> record가 몇 개 안 되면 inode 안에 둡니다.
+많아지면 inode 밖의 btree로 옮깁니다. 4막의 LAYOUTGET은 XFS에서 이
+record를 하나씩 받아 갑니다.</p>
+<p><strong>[3]</strong> 여기서 중요한 것은 상태입니다. 할당했지만 아직
+쓰지 않은 block은 unwritten입니다. 읽으면 0이 나옵니다. 그 자리의 옛
+data를 보이지 않게 하려는 것이죠. data를 쓴 뒤 written으로 바꾸는
+transaction이 따로 듭니다. 7막의 유실 둘은 이 unwritten에서
+시작합니다.</p>
+<h2 id="n16">16. s14 할당의 세 경로 (2분, 끝나면 누적 21분)</h2>
+<p><strong>[0]</strong> 같은 allocator를 세 경로가 부릅니다. 차이는 둘,
+언제 잡느냐와 얼마나 잡느냐입니다.</p>
+<p><strong>[1]</strong> 첫째, local buffered write입니다. write 때는
+block을 정하지 않고 예약만 합니다. 이것을 delalloc이라고 합니다.
+writeback 때 이어진 범위 전체를 한꺼번에, file 끝 뒤까지 넉넉하게
+잡습니다. I/O가 끝나면 written으로 바꿉니다.</p>
+<p><strong>[2]</strong> 둘째, local direct I/O입니다. write system call
+안에서 그 write의 길이만큼 잡고, I/O가 끝나면 written으로 바꿉니다.</p>
+<p><strong>[3]</strong> 셋째, pNFS입니다. LAYOUTGET이 온 그 자리에서
+요청한 범위만큼 잡습니다. 범위를 자르는 code는 없습니다. written이 되는
+것은 client가 다 쓰고 LAYOUTCOMMIT을 보낼 때입니다. 아래 줄처럼 세 경로
+모두 새 extent는 unwritten으로 시작합니다. 이 차이 때문에 5막에서 pNFS
+file이 더 잘게 쪼개집니다.</p>
+<h2 id="n17">17. s15 할당 한 번의 순서 (1.5분, 끝나면 누적 22.5분)</h2>
+<p><strong>[0]</strong> 할당 한 번의 안쪽입니다. AG 0에 이 file의
+extent가 하나 있습니다. 다음 write는 어디에 놓일까요?</p>
+<p><strong>[1]</strong> file 끝에 덧붙이는 write면 앞 extent 바로 뒤
+block을 목표로 잡습니다. 이어 붙이면 extent가 늘지 않기 때문입니다.</p>
+<p><strong>[2]</strong> 그런데 목표 자리에 요청한 길이가 다 들어가지
+않으면요? 그 길이가 통째로 들어가는 빈자리가 어느 AG에든 있으면 그 AG로
+옮겨서라도 한 번에 잡습니다. 쪼개지 않는 쪽을 고르는 것이죠.</p>
+<p><strong>[3]</strong> 어느 AG에도 그런 자리가 없으면 짧게 받고
+나머지를 다시 요청합니다. pNFS에서는 nfsd가 다음 offset으로 XFS를 다시
+부릅니다. 그때마다 transaction 둘과 log force 하나가 더 듭니다. 여기는
+code로 확인했고, 5막의 조각난 file 실험이 그 결과입니다.</p>
+<h2 id="n18">18. s16 transaction과 log force (2분, 끝나면 누적
+24.5분)</h2>
+<p><strong>[0]</strong> XFS가 바뀐 metadata를 device에 남기는 길입니다.
+네 칸을 왼쪽에서 오른쪽으로 따라갑니다.</p>
+<p><strong>[1]</strong> transaction을 commit하면 바뀐 것을 memory의
+목록에 넣고 바로 돌아옵니다. I/O가 없습니다. 이 목록을 CIL이라고
+부릅니다.</p>
+<p><strong>[2]</strong> 누군가 log force를 부르면 그 목록을 log buffer로
+옮겨 device에 씁니다. 이때 device의 write cache를 비우는 flush와 FUA를
+붙입니다. 그래서 log force 한 번은 device의 cache flush까지
+기다립니다.</p>
+<p><strong>[3]</strong> log force를 부른 쪽은 그 write가 끝날 때까지
+잡니다. pNFS에서 MDS가 device를 기다리는 자리가 바로 여기입니다.
+LAYOUTGET과 LAYOUTCOMMIT 안에서 이 대기가 일어납니다.</p>
+<p><strong>[4]</strong> 같은 때 다른 쪽도 log force를 부르면 어떻게
+될까요? 같은 log buffer에 함께 실리고, flush 한 번이 둘을 깨웁니다.
+그래서 부른 횟수와 flush 횟수가 다릅니다. 5막에서 log force를 셀 때 이
+점이 다시 나옵니다. 여기까지는 code로 확인한 순서입니다.</p>
+<h2 id="n19">19. s17 fsync와 LAYOUTCOMMIT (1.5분, 끝나면 누적 26분)</h2>
+<p><strong>[0]</strong> fsync는 무엇을 할까요? 왼쪽 local, 오른쪽 pNFS로
+나눠 봅니다.</p>
+<p><strong>[1]</strong> local fsync는 세 단계입니다. 그 범위의 dirty
+page를 먼저 씁니다. unwritten을 written으로 바꾸는 변환을 기다립니다.
+그리고 inode가 기억한 변경까지 log force를 합니다.</p>
+<p><strong>[2]</strong> pNFS는 다릅니다. layout으로 쓴 범위는 client의
+fsync가 MDS의 fsync를 부르지 않습니다. 대신 LAYOUTCOMMIT 끝의 sync
+transaction이 log force와 device cache flush를 맡습니다. MDS와 client가
+같은 device의 같은 write cache를 본다는 전제입니다. 정리하면,
+LAYOUTCOMMIT이 끝나야 client가 쓴 data가 다른 쪽에서 보이고 crash 뒤에도
+남습니다. 4막과 7막에서 이 점이 계속 나옵니다.</p>
+<h2 id="n20">20. n3 둘이 만나는 곳 (0.25분, 끝나면 누적 26.25분)</h2>
+<p><strong>[0]</strong> 이제 둘이 만나는 곳입니다. export op 셋에서
+write 하나를 처음부터 끝까지 따라가 보겠습니다.</p>
+<h2 id="n21">21. s18 direct I/O와 pNFS write (1.5분, 끝나면 누적
+27.75분)</h2>
+<p><strong>[0]</strong> pNFS write는 무엇이 다를까요? 3막의 direct I/O와
+나란히 놓겠습니다.</p>
+<p><strong>[1]</strong> 위 줄, local direct I/O는 system call 하나
+안에서 세 단계를 다 합니다. unwritten으로 잡고, data를 쓰고, written으로
+바꿉니다.</p>
+<p><strong>[2]</strong> 아래 줄, pNFS는 이 셋을 나눠 맡깁니다. 할당은
+MDS의 LAYOUTGET이 합니다. data는 client가 device에 직접 씁니다. 변환은
+MDS의 LAYOUTCOMMIT이 합니다. XFS code 주석도 이렇게 설명합니다.</p>
+<p><strong>[3]</strong> 그 이음매가 XFS의 export op입니다. map_blocks가
+LAYOUTGET을, commit_blocks가 LAYOUTCOMMIT을 받습니다. 오른쪽 get_uuid는
+write의 짝이 아닙니다. block layout에서 device를 알아보는 데 쓰고,
+mount마다 한 번입니다.</p>
+<h2 id="n22">22. s19 새 file 하나의 write와 fsync (4.5분, 끝나면 누적
+32.25분)</h2>
+<p><strong>[0]</strong> 1 MiB짜리 새 file 하나를 만들고, 쓰고,
+fsync합니다. 그동안 무엇이 오갈까요? 처음부터 끝까지 따라가 보겠습니다.
+칸은 왼쪽부터 application, NFS client, MDS의 nfsd와 XFS, 그리고
+device입니다. 이 순서가 뒤의 모든 막의 바탕입니다. 그래서 조금 천천히
+가겠습니다.</p>
+<p><strong>[1]</strong> file을 만들면 RPC 둘이 MDS로 갑니다. OPEN과
+SETATTR입니다. export가 sync라서 nfsd는 metadata를 바꾸는 operation
+끝마다 log force를 합니다. 오른쪽 글처럼, file 하나의 log force 넷은 RPC
+넷에 하나씩 대응합니다. 다만 이 두 RPC의 몫 둘은 합계에서 뺀 값이고,
+따로 세지는 않았습니다.</p>
+<p><strong>[2]</strong> 첫 write에서 client가 LAYOUTGET을 보냅니다.
+block layout은 이것을 OPEN에 싣지 않고 첫 I/O 때 보냅니다. XFS는 그
+범위를 unwritten으로 할당합니다. 그리고 그 할당이 log에 내려가기를 log
+force로 기다립니다. layout은 그다음에 돌아갑니다. 3막에서 본 바로 그
+대기입니다.</p>
+<p><strong>[3]</strong> 흐린 화살표는 GETDEVICEINFO입니다. layout이
+가리키는 device가 무엇인지 묻는 것이고, mount마다 한 번입니다.</p>
+<p><strong>[4]</strong> 이제 data입니다. 주황 화살표가 MDS를 지나지 않고
+device로 곧장 갑니다. NFS의 COMMIT RPC도 나가지 않습니다.</p>
+<p><strong>[5]</strong> application이 fsync를 부르면 client는
+LAYOUTCOMMIT을 보냅니다. XFS는 쓴 범위를 written으로 바꾸고, log force를
+한 번 더 기다립니다. fsync는 그다음에야 끝납니다.</p>
+<p><strong>[6]</strong> 그럼 file 하나에 log force는 몇 번일까요? 오른쪽
+막대처럼 넷입니다. layout 없는 NFS로 하면 셋입니다. 새 block을 할당하는
+LAYOUTGET이 없어서 하나 적습니다. local XFS는 하나였습니다. data는 MDS를
+비켜 갔는데, MDS의 기다림은 오히려 늘었습니다. 줄어든 것은 bytes이고,
+늘어난 것은 횟수입니다. 이 숫자는 5막에서 다시 봅니다.</p>
+<h2 id="n23">23. s20 LAYOUTGET의 안쪽 (1.5분, 끝나면 누적 33.75분)</h2>
+<p><strong>[0]</strong> LAYOUTGET 하나는 MDS 안에서 무엇을 할까요?
+여기서는 순서가 중요합니다. 이 순서가 비용과 충돌을 정합니다.</p>
+<p><strong>[1]</strong> 첫째, nfsd는 그 file에 진행 중인 recall이 있는지
+봅니다. 있으면 XFS에 들어가기도 전에 거부합니다. 빨간 화살표가 그
+거부입니다.</p>
+<p><strong>[2]</strong> 둘째, 없으면 XFS가 일을 합니다. file을 잠급니다.
+page cache를 쓰고 비웁니다. 빈자리면 unwritten으로 할당하고 log force를
+기다립니다. 그리고 extent 하나를 돌려줍니다.</p>
+<p><strong>[3]</strong> 셋째, 다른 client의 layout과 충돌하는지는 이
+일을 다 한 뒤에야 봅니다. 충돌이면 상대에게 recall을 걸고 거부합니다.
+이미 한 할당은 되돌리지 않습니다. 이 순서는 code로 확인했습니다. 6막에서
+두 client가 부딪칠 때 다시 나옵니다.</p>
+<h2 id="n24">24. s21 commit 전의 data (2.5분, 끝나면 누적 36.25분)</h2>
+<p><strong>[0]</strong> client가 썼지만 아직 commit하지 않은 data는 어떤
+상태일까요? 새로 쓴 범위 하나를 시간 순서로 따라가 보겠습니다. 왼쪽
+처음은 아무 block도 없는 hole입니다.</p>
+<p><strong>[1]</strong> LAYOUTGET이 그 범위를 unwritten으로 잡습니다.
+그다음 client가 위에서 device에 data를 씁니다. 그런데 이때 MDS에서
+읽으면 아직 0입니다. block은 있지만 쓰기 전 상태로 적혀 있기
+때문입니다.</p>
+<p><strong>[2]</strong> client가 LAYOUTCOMMIT을 보내야 written이 됩니다.
+그때부터 다른 reader에게 보이고, crash 뒤에도 남습니다. 기억하실 것은
+하나입니다. client가 썼지만 아직 commit하지 않은 동안, 곧 가운데 칸이
+위험한 구간입니다.</p>
+<p><strong>[3]</strong> 이 구간에서 written으로 가지 못하는 길이 셋
+있습니다. 첫째, commit 전에 layout을 회수하는 recall 도중의 유실. 둘째,
+commit 전에 MDS가 재기동한 뒤의 유실. 셋째, commit되지 않은 할당이
+그대로 남는 경우입니다. 셋 모두 7막에서 실험으로 봅니다. 덮어쓴 범위에서
+MDS가 cache의 옛 data를 보이는 다른 문제도 거기서 함께 봅니다.</p>
+<h2 id="n25">25. m1 지도: 비용 (0.25분, 끝나면 누적 36.5분)</h2>
+<p><strong>[0]</strong> 이제 답의 첫 칸, 비용입니다. MDS의 일은 무엇을
+따라 늘까요? 실험의 수로 보겠습니다.</p>
+<h2 id="n26">26. s22 bytes와 log force (2분, 끝나면 누적 38.5분)</h2>
+<p><strong>[0]</strong> data가 MDS를 비켜 가면 MDS의 일도 줄까요? 새 1
+MiB file 100개를 쓰고 fsync해서 MDS 쪽을 셌습니다. local XFS, layout
+없는 NFS, layout, 셋으로 같은 일을 했습니다. 회색 두 줄이
+대조군입니다.</p>
+<p><strong>[1]</strong> 위 묶음은 MDS가 device에 쓴 bytes입니다.
+layout이면 data를 client가 직접 쓰니까, 100분의 1로 줄었습니다. 아래
+묶음은 log force 횟수입니다. local XFS 101번, layout 없는 NFS 300번,
+layout 400번입니다. local의 약 4배입니다.</p>
+<p><strong>[2]</strong> bytes는 줄고 횟수는 늘었습니다. export가
+sync라서 nfsd는 metadata를 바꾸는 operation 끝마다 log를 기다립니다.
+file당 넷은 OPEN, SETATTR, LAYOUTGET, LAYOUTCOMMIT에 하나씩입니다.
+그래서 layout 없는 NFS도 이미 300번이고, 새 block을 할당하는 LAYOUTGET이
+하나를 더합니다. 오른쪽은 MDS 계산서입니다. 이 막이 끝날 때까지 한 줄씩
+채웁니다. 첫 줄은 새 file 하나에 RPC 넷, log force 넷입니다.</p>
+<h2 id="n27">27. s23 file 수와 MDS의 요청 (1.5분, 끝나면 누적 40분)</h2>
+<p><strong>[0]</strong> 같은 10 GiB를 읽되, 나누는 방법만 바꾸면
+어떨까요? 왼쪽은 128 KiB짜리 작은 file 8만여 개, 오른쪽은 큰 shard
+40개입니다. 읽는 bytes는 같습니다.</p>
+<p><strong>[1]</strong> MDS가 처리한 요청은 247,954 대 90이었습니다.
+bytes가 같아도 MDS의 일은 file 수를 따라갑니다. 작은 file은 열 때마다
+OPEN과 LAYOUTGET이 나가고, DELEGRETURN 같은 요청도 붙습니다.</p>
+<p><strong>[2]</strong> 시간은 대조군 local XFS와의 비로만 봅니다.
+shard는 1.01배로 local과 같았고, 작은 file은 1.26배였습니다. 계산서 둘째
+줄은 시간에 드는 쪽입니다. file 하나를 열 때 차례로 기다리는 MDS 왕복은
+OPEN과 LAYOUTGET 둘입니다. 지연 주입 실험에서 셌습니다. 화면의 요청 수는
+그 밖의 요청까지 센 값이라 file당 약 3입니다.</p>
+<h2 id="n28">28. s24 작은 file의 이득 (1.5분, 끝나면 누적 41.5분)</h2>
+<p><strong>[0]</strong> 그럼 몇 KiB부터 layout이 이득일까요? file 크기를
+바꿔 가며 읽는 시간을 비로 냈습니다. layout이 있을 때 나누기 없을
+때입니다. 점선 1보다 아래면 layout이 이득입니다.</p>
+<p><strong>[1]</strong> 4 KiB에서는 1.11로 오히려 느렸습니다. 16 KiB에서
+0.98로 같아졌고, 64 KiB에서 0.77로 이득이 났습니다. 오른쪽 도장은 실험
+전에 세운 예상, 곧 가설이 맞았는지입니다. 이득이 rsize 근방에서야
+시작하리라 봤는데, 이 환경에서는 훨씬 작은 크기에서 시작했습니다. data가
+MDS를 거치지 않기 때문입니다.</p>
+<p><strong>[2]</strong> 아래는 따로 돌린 지연 주입 실험이라 지연 0에서
+0.73입니다. MDS까지 지연을 2 ms만 넣어도 0.97로 올라 이득이
+사라졌습니다. 정리하면, 교차하는 크기는 이 환경의 값입니다. 실제
+장비에서는 MDS까지의 지연에 따라 움직입니다.</p>
+<h2 id="n29">29. s25 fsync 횟수와 layout RPC (1.5분, 끝나면 누적
+43분)</h2>
+<p><strong>[0]</strong> checkpoint는 fsync를 언제 하느냐에 따라
+달라질까요? 학습 process 넷이 각자 새 file에 쓰고, fsync하는 때만
+바꿨습니다. 숫자는 넷을 더한 횟수입니다.</p>
+<p><strong>[1]</strong> 끝에 한 번 fsync하면 8번씩, 자주 하면
+256번씩이었습니다. 끝에 한 번인데도 file당 두 번인 까닭은 client
+writeback이 범위를 둘로 나눠 보냈기 때문입니다. 계산서 셋째 줄입니다.
+LAYOUTGET 수는 fsync 횟수와, client writeback이 dirty 범위를 나누는
+횟수가 같이 정합니다.</p>
+<p><strong>[2]</strong> 미리 할당해 둔 file이면 LAYOUTGET 안의 log
+force가 0이었습니다.</p>
+<p><strong>[3]</strong> 그럼 부른 횟수가 그대로 device write가 될까요?
+아닙니다. 넷이 동시에 부른 520번은 log write 396번으로 묶였습니다. RPC
+회계 실험에서 하나씩 부른 400번은 그대로였습니다. 3막의 둘째
+caller입니다.</p>
+<h2 id="n30">30. s26 extent 수와 LAYOUTGET (1.5분, 끝나면 누적
+44.5분)</h2>
+<p><strong>[0]</strong> file이 조각나 있으면 어떻게 될까요? 64 MiB
+file을 extent 1개부터 4,096개까지로 만들고, 통째로 읽고 썼습니다.</p>
+<p><strong>[1]</strong> 먼저 LAYOUTCOMMIT입니다. 변환 transaction은
+unwritten extent 하나에 하나입니다. 이 실험처럼 rmapbt가 켜져 있으면 한
+번 roll됩니다. 그래서 commit이 extent마다 둘, 끝에 하나 더 찍힙니다.
+4,096개면 8,193번입니다. 그래도 device를 기다리는 log force는 끝의 한
+번뿐이었습니다.</p>
+<p><strong>[2]</strong> LAYOUTGET 하나에는 extent가 92개까지 담깁니다.
+그래서 64개까지 한 번, 256개에서 3번, 1,024개에서 12번, 4,096개에서
+45번입니다. 계산서 넷째 줄입니다. extent 92개마다 LAYOUTGET 하나, 변환할
+extent 하나마다 transaction commit 둘입니다.</p>
+<h2 id="n31">31. s27 file이 쪼개지는 조건 (1분, 끝나면 누적 45.5분)</h2>
+<p><strong>[0]</strong> 그럼 file은 언제 조각날까요? 오래
+써서일까요?</p>
+<p><strong>[1]</strong> 아닙니다. 용량의 6배까지 쓰고 지워도 file당
+extent는 1개였습니다. aging 가설은 기각입니다. 조건은 file을 통째로 쓰고
+한 번 fsync, 가장 긴 free extent보다 작은 file입니다.</p>
+<p><strong>[2]</strong> 대신 file 4개가 동시에 자라며 1 MiB마다
+fsync하면, 78% 찬 filesystem에서 pNFS는 106~256개, local은
+6~9개였습니다. 한 번 돌린 결과입니다. 같은 AG에서 번갈아 할당받아 서로의
+다음 block을 차지합니다(3막). 계산서 다섯째 줄입니다.</p>
+<h2 id="n32">32. s28 MDS 계산서 (0.5분, 끝나면 누적 46분)</h2>
+<p><strong>[0]</strong> 계산서 다섯 줄을 다시 보겠습니다. 줄마다
+횟수이고, bytes 줄은 하나도 없습니다. 속도 이야기가 아니라 횟수
+이야기입니다. MDS의 일은 data의 양이 아니라, file을 열고 fsync하고
+조각을 다루는 횟수를 따릅니다. 이것이 첫 칸의 답입니다.</p>
+<h2 id="n33">33. m2 답의 지도 (0.25분, 끝나면 누적 46.25분)</h2>
+<p><strong>[0]</strong> 첫 칸을 채웠습니다. 둘째 칸은 공유입니다. 두
+client가 한 file을 같이 쓰면 어떻게 될까요?</p>
+<h2 id="n34">34. s29 recall의 대기 (1.5분, 끝나면 누적 47.75분)</h2>
+<p><strong>[0]</strong> layout을 돌려받을 때 MDS는 얼마나 기다릴까요?
+2막의 recall을 실제로 걸어 봤습니다. client가 layout을 가진 file을
+MDS에서 truncate합니다.</p>
+<p><strong>[1]</strong> truncate가 file lease를 깹니다. nfsd가 client에
+recall을 보냅니다. client가 LAYOUTCOMMIT과 LAYOUTRETURN을 보내면 연산이
+진행합니다. client가 답하면 거의 바로 끝납니다.</p>
+<p><strong>[2]</strong> 오른쪽 숫자 둘입니다. 첫째, client가 답하지
+못하면 연산은 약 3,000배를 기다렸습니다. 둘째, 아직 commit하지 않은
+data가 16배 많아도 대기는 1.09배로 같았습니다. client는 recall을 받으면
+LAYOUTCOMMIT 한 번과 LAYOUTRETURN을 보낼 뿐이기 때문입니다. 대기를
+가르는 것은 쓰지 않은 양이 아니라, client가 답하느냐입니다.</p>
+<h2 id="n35">35. s30 두 client의 recall 반복 (2.5분, 끝나면 누적
+50.25분)</h2>
+<p><strong>[0]</strong> 두 client가 한 file을 쓰면 layout은 둘 사이를
+오갈까요? 왼쪽 첫 칸이 C2, 둘째 칸이 C1입니다. 둘 다 같은 file에 쓰려고
+합니다.</p>
+<p><strong>[1]</strong> C1이 먼저 layout을 받았습니다. 주황 화살표처럼
+device에 직접 쓰고 있습니다.</p>
+<p><strong>[2]</strong> C2가 같은 file에 LAYOUTGET을 보냅니다. MDS는 XFS
+일을 먼저 다 하고 나서야 충돌을 봅니다. 그리고 C2를 거부하면서 C1에
+recall을 보냅니다. 이 검사 순서는 code로 확인했습니다.</p>
+<p><strong>[3]</strong> C1은 순순히 layout을 돌려줍니다.</p>
+<p><strong>[4]</strong> 그런데 C1의 다음 I/O가 곧바로 LAYOUTGET을 보내
+layout을 다시 가져갑니다. C1은 쉬지 않고 쓰고 있으니까요.</p>
+<p><strong>[5]</strong> 그동안 C2는 어떨까요? 오른쪽 숫자처럼 0.1초에서
+시작해 15.4초까지, 점점 길게 기다렸다가 다시 묻고 또 거부됩니다. 합치면
+41.7초를 기다렸고, 그동안 MDS로 돌아가지도 않았습니다. 정리하면,
+layout은 두 client 사이를 오가지 않고 가진 쪽에 붙어 있습니다. 번갈아
+오가리라던 예상은 기각입니다.</p>
+<h2 id="n36">36. s31 밀린 client의 30초 (2.5분, 끝나면 누적
+52.75분)</h2>
+<p><strong>[0]</strong> 앞의 반복이 30초 동안 쌓이면 어떻게 보일까요? 두
+client의 I/O를 시간 띠로 그렸습니다. 파란 띠가 I/O를 낸 구간, 빗금 칸이
+멈춘 구간입니다. 위 두 줄이 쓰기 조건, 아래 두 줄이 읽기 조건입니다. 두
+client는 같은 file의 서로 다른 절반을 쉬지 않고 씁니다. 범위는 겹치지
+않습니다.</p>
+<p><strong>[1]</strong> 먼저 쓰기입니다. C1은 30초 동안 6,268번
+썼습니다. C2는 그 사이 단 한 번 썼습니다. C2는 나머지 시간을 내내
+기다렸습니다. 30초 뒤까지 뻗은 빗금은 마지막 재시도를 기다린 시간입니다.
+반면 C1의 띠는 거의 끊김이 없습니다.</p>
+<p><strong>[2]</strong> 읽기끼리는 다를까요? 같았습니다. 이번에는 C2가
+6,611번 읽는 동안 C1이 두 번 읽었습니다. 서로 다른 구간을 읽기만
+하는데도 그렇습니다. server가 충돌을 범위도, 읽기 쓰기도 보지 않고 file
+단위로 보기 때문입니다. 이 까닭은 code로 확인했습니다. 다만 두 쪽 모두
+쉬지 않고 I/O를 냈을 때이고, 상대가 쉬는 틈이 있을 때는 보지 않았습니다.
+한 번씩만 돌린 결과입니다. 정리하면 공유 칸의 답은 이렇습니다. 한 file을
+둘이 쉬지 않고 같이 쓰면, 읽기든 쓰기든 한쪽은 거의 I/O를 내지
+못합니다.</p>
+<h2 id="n37">37. m3 답의 지도 (0.25분, 끝나면 누적 53분)</h2>
+<p><strong>[0]</strong> 둘째 칸도 채웠습니다. 마지막 칸은 장애입니다.
+fsync가 성공했다면 data는 정말 남았을까요?</p>
+<h2 id="n38">38. s32 recall 도중의 유실 (3.5분, 끝나면 누적 56.5분)</h2>
+<p><strong>[0]</strong> fsync가 성공했는데 data가 0으로 읽힌다면, 어디서
+사라진 걸까요? 4막에서 본 빠지는 길의 첫째입니다. client는 새 file에 512
+MiB를 1 MiB씩 순서대로 쓰고, 끝에 한 번 fsync합니다. 그동안 MDS에서는
+1초마다 같은 file에 truncate -s 4G를 겁니다. size만 4 GiB로 늘리는
+것이라, 이미 쓴 범위는 자르지 않습니다.</p>
+<p><strong>[1]</strong> client가 LAYOUTGET으로 layout을 받습니다. XFS는
+그 범위를 unwritten으로 잡습니다.</p>
+<p><strong>[2]</strong> client는 device에 직접 씁니다. LAYOUTCOMMIT은
+아직입니다. 끝의 fsync 때 보낼 생각이죠.</p>
+<p><strong>[3]</strong> 그 사이 MDS의 truncate가 file lease를 깹니다.
+nfsd는 client에 recall을 보냅니다.</p>
+<p><strong>[4]</strong> 여기가 핵심입니다. client가 돌려준
+LAYOUTRETURN이 LAYOUTCOMMIT보다 먼저 MDS에 닿았습니다. 그러면 MDS는 늦게
+온 LAYOUTCOMMIT을 NFS4ERR_BADLAYOUT으로 거부합니다. 그런데 client는 이
+거부를 성공으로 처리하고 넘어갑니다. 빨갛게 표시한 자리입니다. 근거는
+셋으로 나뉩니다. 첫째, LAYOUTRETURN이 먼저 닿는 순서는 계속 쓰는
+조건에서 trace로 봤고, 유실이 난 실행에서는 거부 네 번을 봤습니다. 둘째,
+거부가 닫힌 stateid 때문이라는 것과 거부를 성공으로 바꾸는 것은 code로
+확인했습니다. 셋째, 왜 그 순서가 되는지는 예측입니다.</p>
+<p><strong>[5]</strong> 그래서 application의 fsync는 성공합니다. 오른쪽
+막대를 보시죠. recall이 난 네 번의 실행에서 512 block 가운데 6, 148, 4,
+3개가 0으로 읽혔습니다. recall이 없던 세 번은 0개였고, client를 다시
+mount해 읽어도 0이었습니다. commit되지 못한 범위가 unwritten으로 남았기
+때문입니다.</p>
+<h2 id="n39">39. s33 commit 전 MDS 재기동 (2.5분, 끝나면 누적 59분)</h2>
+<p><strong>[0]</strong> 둘째 길입니다. 이번에는 recall이 아니라 MDS가
+멈추면 어떻게 될까요?</p>
+<p><strong>[1]</strong> client가 layout을 받아 새 범위에 64 MiB를
+썼습니다. 아직 LAYOUTCOMMIT 전입니다. 그래서 MDS에서 이 file은 size
+0이고, 범위는 unwritten입니다.</p>
+<p><strong>[2]</strong> 이때 MDS를 강제로 끄고 다시 띄웠습니다. 그 뒤
+client가 fsync를 합니다. LAYOUTCOMMIT은 error를 받는데, client는 그
+error를 성공으로 처리하고 다시 보내지 않습니다. 그래서 fsync는
+성공합니다. 하지만 오른쪽 칸처럼 MDS에서 file은 여전히 size 0, 범위는
+unwritten이었습니다. error를 성공으로 바꾸는 것은 code로 확인했습니다.
+client 한 대로 한 번 실행했고, device의 write cache는 남아 있는
+조건입니다.</p>
+<p><strong>[3]</strong> 재기동 뒤에는 grace가 있습니다. 재기동한
+server가 예전 상태를 되찾는 동안 새 요청을 거부하는 기간입니다. 이 동안
+LAYOUTGET은 거부되고, client는 재시도만 하며 MDS로 돌아가지 않습니다.
+화면의 열 번, 57.4초는 NFSv3을 같이 내준 구성에서 lockd의 grace 50초에
+묶인 값입니다. data를 본 실행과는 다른 실행입니다. 예상한 90초와 달랐던
+것은 nfsd의 grace가 그 전에 끝났기 때문입니다.</p>
+<h2 id="n40">40. s34 옛 data와 남는 할당 (1분, 끝나면 누적 60분)</h2>
+<p><strong>[0]</strong> 셋째 길은 commit되지 못한 할당이 남는 것입니다.
+덮어쓴 file의 옛 data도 함께 봅니다.</p>
+<p><strong>[1]</strong> 위 줄입니다. layout을 내준 뒤 MDS가 그 file을
+읽어 cache에 올려 두면, client가 덮어쓰고 fsync해도 MDS에서는 64 MiB
+가운데 63 MiB가 옛 data였습니다.</p>
+<p><strong>[2]</strong> 아래 줄입니다. fsync 전에 MDS가 강제 종료된
+file에는 할당이 남고, 지우거나 truncate해야 회수됩니다. 회수는 code로
+확인했고, client가 멈춘 경우도 같다는 것은 운영 지침의 code
+확인입니다.</p>
+<h2 id="n41">41. s35 답하지 않는 client와 block layout (2.5분, 끝나면
+누적 62.5분)</h2>
+<p><strong>[0]</strong> client가 아예 답하지 못하면 어떻게 될까요?</p>
+<p><strong>[1]</strong> C1과 MDS 사이의 control link를 끊었습니다.
+그리고 MDS에서 그 file에 write를 겁니다. recall은 C1에 닿지
+않습니다.</p>
+<p><strong>[2]</strong> MDS의 연산은 file lease의 timer만큼 기다렸다가
+진행했습니다. 오른쪽 숫자입니다. timer가 45초일 때 46.1초, 10초로 줄이면
+10.5초였습니다. 대기는 timer를 따라갑니다.</p>
+<p><strong>[3]</strong> 그런데 주황 화살표를 보시죠. 끊긴 C1은 들고 있던
+layout으로 device에 계속 썼습니다. 2막에서 본 대로 block layout에는 그
+client를 막을 수단이 없습니다. MDS는 진행했다고 여기는데, device에는
+다른 쪽의 쓰기가 계속 들어옵니다.</p>
+<h2 id="n42">42. s36 SCSI fence와 nvmet (2.5분, 끝나면 누적 65분)</h2>
+<p><strong>[0]</strong> 그럼 SCSI layout은 끊긴 client를 막을 수
+있을까요? 막을 수단은 있습니다. 결과는 이랬습니다.</p>
+<p><strong>[1]</strong> 왼쪽 표입니다. SCSI device에는 key를 등록한 쪽만
+쓸 수 있습니다. 지금 등록은 MDS와 client 둘, 모두 셋입니다. fence는 끊긴
+client의 key를 지워 막는 일입니다.</p>
+<p><strong>[2]</strong> MDS는 fence가 성공했다고 기록했습니다. 그런데
+등록은 셋 그대로였고, C1은 device에 계속 썼습니다. MDS의 연산은 45초
+timer와 거의 같은 때에 풀렸습니다. 규격은 이때 등록을 지우라고 합니다.
+그래서 nvmet 쪽의 차이로 보고, 다른 device에서는 확인하지
+못했습니다.</p>
+<p><strong>[3]</strong> 오른쪽은 fence가 실패하게 만든 조건입니다. MDS의
+연산이 110.5초 묶였습니다. 45초를 두 번 기다리는 사이 client lease가
+끝나 layout이 거둬졌고, 다음 fence 재시도가 그것을 보고 풀었습니다.
+기억하실 것은 하나입니다. fence가 성공해서 풀린 것이 아닙니다. 둘 다 한
+번씩 실행한 결과입니다.</p>
+<h2 id="n43">43. s37 mount 직후의 멈춤 (1분, 끝나면 누적 66분)</h2>
+<p><strong>[0]</strong> 마지막은 data는 맞는데 멈추는 경우입니다.
+session slot은 MDS가 한 client의 요청을 동시에 처리하는 칸입니다.
+실험에서는 MDS에서 drop_caches로 이 칸을 두 개까지 줄였습니다.</p>
+<p><strong>[1]</strong> mount 직후 여러 file의 첫 LAYOUTGET이 slot을 다
+차지하고 device 정보를 기다립니다. 그러면 GETDEVICEINFO를 보낼 slot이
+없습니다. 다섯 번 모두 멈췄습니다.</p>
+<p><strong>[2]</strong> 피하는 길은 있습니다. mount 뒤 file 하나를 먼저
+읽어 device 정보를 받아 두면 멈추지 않았습니다.</p>
+<h2 id="n44">44. m4 지도: 장애를 채움 (0.25분, 끝나면 누적 66.25분)</h2>
+<p><strong>[0]</strong> 세 칸을 다 채웠습니다. 그럼 찾은 결함은 어디까지
+고쳤을까요?</p>
+<h2 id="n45">45. s38 찾은 결함과 patch (2.5분, 끝나면 누적 68.75분)</h2>
+<p><strong>[0]</strong> 7막의 결함을 같은 순서로 놓았습니다. 상태는 10월
+19일 기준입니다. patch는 VM에서 시험하고 독립 리뷰를 거쳐 냈습니다.</p>
+<p><strong>[1]</strong> 초록 chip이 적용된 것입니다. 첫째, nfsd의
+recall과 lease break 결함을 고친 series입니다. file 공유 실험, job 수
+실험과 그 후속 시험에서 나왔습니다. 7막의 유실과 같은 원인인지는 다음
+장에서 말씀드립니다. 같은 series가 block layout에서 file lease가 끝날 때
+fence script를 부르게 했습니다. 둘 다 nfsd-testing에 들어갔습니다. 둘째,
+nvmet의 preempt는 nvme-7.4에 들어갔습니다. 아래의 다른 patch 셋도 각
+tree에 들어갔습니다.</p>
+<p><strong>[2]</strong> XFS 쪽 묶음 series는 리뷰 중이고, pynfs 시험은
+답을 기다립니다.</p>
+<p><strong>[3]</strong> mount 직후 멈춤을 고치는 client patch는 준비만
+해 두었습니다.</p>
+<p><strong>[4]</strong> 남은 것도 있습니다. client가 거부를 성공으로
+바꾸는 동작, commit 전 재기동, 옛 data와 남는 할당에는 patch가 없습니다.
+block layout은 device 쪽에서 막을 수단이 여전히 없어, 그 script에 달려
+있습니다. EOF 너머 block 해제는 nfsd-testing에서 재현해 XFS 묶음으로
+보냈습니다. MDS에서 defragment할 때 block이 해제되는 경로는 code로만
+확인했습니다.</p>
+<h2 id="n46">46. s39 recall 고침: 고친 것과 남은 것 (2.5분, 끝나면 누적
+71.25분)</h2>
+<p><strong>[0]</strong> recall 쪽 patch를 조금 깊게 보겠습니다. 먼저
+조건입니다. 이 시험은 기준 kernel이 아니라 nfsd-testing 위에서 debug
+kernel로 했습니다.</p>
+<p><strong>[1]</strong> 왼쪽이 고친 것입니다. nfsd는 recall을 받아들인
+client에 10 ms마다 같은 callback을 다시 보냅니다. 최근 Linux client가
+이를 old stateid로 답하면, nfsd는 recall이 실패한 것으로 보고 layout을
+거둬 버렸습니다. 이 경로를 고쳤습니다. 같은 조작에서 patch가 없으면 469
+block 가운데 21개가 0으로 읽혔습니다. 적용되기 전의 이전 판에서는 481
+가운데 0개였습니다. 적용된 v3로 다른 조작을 한 시험에서도
+0이었습니다.</p>
+<p><strong>[2]</strong> 오른쪽이 남은 것입니다. client가 거부를 성공으로
+바꾸는 동작은 그대로입니다. client 쪽에서 고쳐 보겠다는 답이 왔습니다.
+그리고 분명히 해 둘 것이 있습니다. 7막에서 본 유실과 같은 원인인지는
+기준 kernel에서 대조하지 않았습니다.</p>
+<h2 id="n47">47. m5 지도: 고친 것과 남은 것 (0.25분, 끝나면 누적
+71.5분)</h2>
+<p><strong>[0]</strong> 비용은 동작의 모양이라 그대로, 공유는 남았고,
+장애는 일부만 고쳤습니다. 그럼 어떤 workload에 맞을까요?</p>
+<h2 id="n48">48. s40 workload별 적합성 (2분, 끝나면 누적 73.5분)</h2>
+<p><strong>[0]</strong> 답은 세 칸입니다. 맞는 것, 조건이 붙는 것, 맞지
+않는 것입니다.</p>
+<p><strong>[1]</strong> 왼쪽 초록 칸, 맞는 일입니다. 큰 file을
+client마다 따로 읽는 일입니다. shard로 묶은 dataset이나 model load가
+여기에 듭니다. MDS의 일이 거의 없습니다.</p>
+<p><strong>[2]</strong> 가운데, 조건이 붙는 것이 셋입니다. 첫째,
+checkpoint는 맞지만 fsync 전의 data는 MDS가 멈추면 남지 않습니다. 둘째,
+작은 file이 많은 read는 file마다 MDS 왕복이 둘이라 이득이 작습니다.
+shard로 묶으면 맞습니다. 셋째, KV cache는 object 크기에 달려 있습니다.
+실험한 크기는 작아서 오른쪽 칸에 들었고, 문헌의 큰 크기는 실험하지 않아
+예측입니다.</p>
+<p><strong>[3]</strong> 오른쪽 빨간 칸, 맞지 않는 일입니다. 작은 새
+file을 쓰고 fsync하는 일은 file마다 log force가 넷이라 맞지 않습니다. 한
+file을 여러 client가 동시에 계속 쓰는 일도 한쪽이 거의 쓰지 못해 맞지
+않습니다.</p>
+<h2 id="n49">49. s41 쓰려면 지킬 것 다섯 (2.5분, 끝나면 누적 76분)</h2>
+<p><strong>[0]</strong> 그래도 쓴다면 지킬 것이 다섯입니다.</p>
+<p><strong>[1]</strong> 첫째, layout이 실제로 쓰이는지 RPC 수로
+확인합니다. 조건이 하나라도 어긋나면 error 없이 MDS로 갑니다.</p>
+<p><strong>[2]</strong> 둘째, 한 file을 여러 client가 동시에 계속 쓰지
+않게 합니다. 두 쪽 모두 쉬지 않고 쓰면 한쪽이 굶습니다.</p>
+<p><strong>[3]</strong> 셋째, layout이 나간 file을 MDS 쪽에서 건드리지
+않습니다. backup이나 scan도 그렇습니다. 옛 data를 보거나 recall을
+일으킵니다.</p>
+<p><strong>[4]</strong> 넷째, SCSI layout을 쓰려면 그 device에서 fence가
+실제로 등록을 지우는지 먼저 확인합니다. 7막의 nvmet에서는 등록이
+그대로였습니다.</p>
+<p><strong>[5]</strong> 다섯째, mount 뒤 file 하나를 먼저 읽어 두면 동시
+LAYOUTGET의 멈춤을 피합니다. 나머지 지침은 부록에 있습니다.</p>
+<h2 id="n50">50. s42 판정하지 못한 것 (1.5분, 끝나면 누적 77.5분)</h2>
+<p><strong>[0]</strong> 한계도 숨기지 않겠습니다. 판정하지 못한 것이
+다섯입니다. 첫째, 실제 device의 fence는 nvmet에서만 봤습니다. 둘째, 실제
+장비에서 device가 한도가 되는 지점은 모릅니다. 셋째, recall 대기 실험을
+기준 이후의 client 수정 위에서 다시 돌리지 않았습니다. 넷째, 다른 계기의
+recall에서는 data를 대조하지 않았습니다. 다섯째, 한 번만 돌린 실험이 넷
+있습니다.</p>
+<p><strong>[1]</strong> 아래는 예상과 달라 기각된 것입니다. 이만큼
+있습니다. 가설 열세 개의 판정 전체는 부록에 있습니다.</p>
+<h2 id="n51">51. s43 정리 (0.5분, 끝나면 누적 78분)</h2>
+<p><strong>[0]</strong> MDS의 계산서는 bytes가 아니라 횟수로 나옵니다.
+큰 file에는 맞고, 작은 file과 공유 file에는 약합니다. fsync가 성공해도
+data가 남지 않는 길이 있었고, 일부만 고쳤습니다. data는 MDS를 비켜 가도,
+횟수는 MDS를 지나갑니다. 감사합니다.</p>
+<h1 id="appendix">부록</h1>
+<h2 id="n52">52. a00 부록: 질의응답 장면 색인</h2>
+<p><strong>[0]</strong> 질의응답용 색인입니다. 답은 예상 질문 카드에
+있습니다.</p>
+<h2 id="n53">53. a01 부록: kernel 구성요소와 그 사이를 오가는 것</h2>
+<p><strong>[0]</strong> code를 읽으실 분의 지도입니다. server의 nfsd와
+XFS, client의 pNFS core와 blocklayout driver가 어떤 경계로 이어지는지
+봅니다.</p>
+<h2 id="n54">54. a02 부록: layout 상태를 담는 구조</h2>
+<p><strong>[0]</strong> layout 상태를 담는 구조입니다. 왼쪽 client,
+오른쪽 server입니다. recall은 server의 stateid 단위입니다.</p>
+<h2 id="n55">55. a03</h2>
+<p><strong>[0]</strong> LAYOUTGET 한 번이 XFS에서 하는 일입니다. file을
+잠급니다. page cache를 쓰고 비웁니다. extent 하나를 통째로 읽습니다.
+hole이면 unwritten으로 잡고 log force로 기다립니다.</p>
+<h2 id="n56">56. a04</h2>
+<p><strong>[0]</strong> LAYOUTCOMMIT 한 번입니다. 범위마다 unwritten을
+written으로 바꿉니다. 끝에 inode를 바꾸는 transaction 하나를 sync로
+commit합니다. 기다리는 것은 이 마지막 한 번입니다.</p>
+<h2 id="n57">57. a05</h2>
+<p><strong>[0]</strong> I/O 하나가 layout을 얻는 판단입니다. 첫째, 한 번
+실패한 iomode는 MDS로 보냅니다. 둘째, cache에 segment가 있으면 씁니다.
+셋째, 없으면 LAYOUTGET을 보냅니다. 충돌 error면 기다렸다 다시 묻습니다.
+못 준다는 답이면 실패 표시를 하고 MDS로 갑니다.</p>
+<h2 id="n58">58. a06 부록: 실험 공통 조건</h2>
+<p><strong>[0]</strong> 실험 전체의 공통 조건입니다. VM 네 대, device는
+Linux nvmet입니다. 정성 실험이라 결론에는 횟수와 순서, 대조군과의 비만
+썼습니다.</p>
+<h2 id="n59">59. a07 부록: 지연 주입 실험과 job 수 실험</h2>
+<p><strong>[0]</strong> 왼쪽은 지연을 넣은 자리별로 느려지는 것,
+오른쪽은 job 수를 늘릴 때의 곡선입니다. 모두 같은 조건 안의
+비입니다.</p>
+<h2 id="n60">60. a08 부록: patch 시험 방법</h2>
+<p><strong>[0]</strong> patch를 낸 방법입니다. 같은 VM 구성에서 patch
+전후를 번갈아 돌렸습니다. 독립 리뷰를 받고 보냈습니다.</p>
+<h2 id="n61">61. a09 부록: 가설 13개의 판정</h2>
+<p><strong>[0]</strong> 가설 열세 개의 판정입니다. 지지만 있지 않습니다.
+기각과 부분 기각이 여섯입니다.</p>
+<h2 id="n62">62. a10 부록: 실험별로 본 것과 실행 횟수</h2>
+<p><strong>[0]</strong> 실험 열두 개가 무엇을 봤고 몇 번 돌렸는지입니다.
+한 번만 돌린 실험은 결론에서도 그렇게 말했습니다.</p>
+<h2 id="n63">63. a11 부록: patch별 base, 판, 시험</h2>
+<p><strong>[0]</strong> patch마다 어느 tree 위에서 무엇으로
+시험했는지입니다. 상태는 10월 19일 기준입니다.</p>
+<h2 id="n64">64. a12 부록: 운영 지침 열 개</h2>
+<p><strong>[0]</strong> 운영 지침 열 개 전체입니다. 본문에서 말한 것은
+그중 다섯입니다.</p>
+<h2 id="n65">65. a13 부록: 용어와 시간 값</h2>
+<p><strong>[0]</strong> 본문에 나온 용어와 시간 값입니다. file lease와
+client lease는 다른 것입니다.</p>
+<h1 id="faq">예상 질문 카드</h1>
+<p>답은 page와 판정 문서에서만 가져왔다. 거기에 없는 것은 “확인하지
+않았다”로 답한다. “보일 slide”는 이 file에서는 storyboard의 id와
+클릭이고, 인쇄 대본(<code>script.md</code>)에서는 발표 화면의 slide
+번호로 바뀐다. 질의응답 장면 색인(부록 slide 52)과 같은 순서다.</p>
+<h2 id="q1">1. 실제 장비에서는?</h2>
+<p>device가 한도가 되는 지점은 판정하지 못했습니다. job 수 실험에서 T의
+backing을 실제 NVMe partition으로 바꿔도 operation 수는 raw file의
+0.91~1.20배였습니다. 이 환경의 한도는 device가 아니라 가상
+network였습니다. 결론은 횟수와 순서로 냈고, 시간의 비와 교차하는 크기는
+이 환경의 값입니다.</p>
+<p>보일 slide: <a href="#n50">slide 50</a> (0), <a href="#n59">slide
+59</a></p>
+<h2 id="q2">2. flexfiles는?</h2>
+<p>이 조사의 범위 밖입니다. Linux nfsd의 layout type은 셋입니다.
+flexfiles는 XFS의 export op를 부르지 않습니다. Linux nfsd에서는 data가
+같은 server에 NFSv3 RPC로 갑니다.</p>
+<p>보일 slide: <a href="#n7">slide 7</a> (2)</p>
+<h2 id="q3">3. 왜 SCSI fence가 막지 못했나?</h2>
+<p>Linux nvmet이 다른 등록을 지우지 않았기 때문입니다. nfsd의 preempt는
+성공을 돌려줬습니다. NVMe Base Specification 2.1은 지우라고 하므로 nvmet
+쪽의 차이입니다. 고치는 patch가 nvme-7.4에 들어갔습니다. 다른 device(sd,
+실제 NVMe device)에서는 확인하지 못했습니다.</p>
+<p>보일 slide: <a href="#n42">slide 42</a> (2), <a href="#n45">slide
+45</a> (1)</p>
+<h2 id="q4">4. 기준 이후 upstream에서는?</h2>
+<p>client 쪽은 확인하지 못했습니다. <code>pnfs_layout_need_return</code>
+비교를 고친 <code>203582017774</code>가 recall 도중 유실에 가장 가깝지만
+그 위에서 돌리지 않았습니다. nfsd 쪽은 우리가 낸 recall 수정이
+nfsd-testing에 들어갔습니다.</p>
+<p>보일 slide: <a href="#n46">slide 46</a> (2), <a href="#n50">slide
+50</a> (0)</p>
+<h2 id="q5">5. layout 없는 NFS와 어떻게 비교했나, 대조군은
+무엇인가?</h2>
+<p>대조군은 둘입니다. 같은 export에서 pnfs만 뺀 layout 없는 NFS와 local
+XFS입니다. 같은 workload의 횟수와 시간의 비를 냈습니다. 예를 들어 새
+file 100개 write와 fsync에서 log force는 layout 400, layout 없는 NFS
+300, local XFS 101이었습니다.</p>
+<p>보일 slide: <a href="#n26">slide 26</a> (1), <a href="#n58">slide
+58</a></p>
+<h2 id="q6">6. 한 번 실행한 결과를 믿을 수 있나?</h2>
+<p>일어났다는 관측으로만 씁니다. 빈도는 말하지 않습니다. 한 번 실행한
+것은 file 공유, client 차단, 재기동 실험과 조각난 file 실험의 write
+arm입니다. 화면에는 “1회”로 표시했습니다.</p>
+<p>보일 slide: <a href="#n50">slide 50</a> (0), <a href="#n62">slide
+62</a></p>
+<h2 id="q7">7. 문헌의 KV cache 크기에서는?</h2>
+<p>그 크기는 실험하지 않았습니다. 실험한 KV cache object는 256 KiB~16
+MiB였습니다. file마다 log force가 4~4.5회(KV cache 반복 실험에서 4.5)
+드는 작은 새 file 쪽입니다. 문헌의 수십 MiB~수 GiB는 큰 file 쪽에
+가깝다고 예측합니다.</p>
+<p>보일 slide: <a href="#n48">slide 48</a> (2)</p>
+<h2 id="q8">8. FDP는?</h2>
+<p>이 조사의 범위 밖입니다. FDP와 device 쪽 write amplification은 다루지
+않았습니다.</p>
+<p>보일 slide: 없음</p>
+<h2 id="q9">9. XFS 말고 다른 filesystem은?</h2>
+<p>기준 tree에서는 XFS 하나뿐입니다. block과 SCSI layout이 부르는 export
+op <code>map_blocks</code>를 XFS만 구현합니다. 다른 filesystem에는
+nfsd가 이 두 layout을 내주지 않습니다.</p>
+<p>보일 slide: <a href="#n7">slide 7</a> (2)</p>
+<h2 id="q10">10. VM 환경의 한계는?</h2>
+<p>속도의 비가 실제 장비와 다릅니다. host 1대 위 VM 4대, 세 연결 모두
+가상 network입니다. device는 Linux nvmet입니다. 그래서 절대 throughput과
+latency는 결론에 쓰지 않았습니다.</p>
+<p>보일 slide: <a href="#n3">slide 3</a> (3), <a href="#n58">slide
+58</a></p>
+<h2 id="q11">11. 운영할 때 무엇을 피해야 하나?</h2>
+<p>본문의 다섯입니다. layout이 쓰이는지 확인합니다. 한 file을 여러
+client가 같이 쓰지 않습니다. layout이 나간 file은 MDS에서 건드리지
+않습니다. SCSI layout은 device의 fence부터 확인합니다. mount 뒤 file
+하나를 먼저 읽어 둡니다. 나머지 다섯은 부록에 있습니다.</p>
+<p>보일 slide: <a href="#n49">slide 49</a> (5), <a href="#n64">slide
+64</a></p>
+<h2 id="q12">12. slide 38의 유실과 nfsd patch가 고친 것은 같은
+원인인가?</h2>
+<p>기준 kernel에서 같은 원인인지 대조하지 않았습니다. patch가 고친 것은
+nfsd가 recall을 실패로 처리해 layout을 버리던 경로입니다. client가
+<code>NFS4ERR_BADLAYOUT</code>을 성공으로 바꾸는 동작은 남았습니다.
+nfsd-testing에서는 같은 조작의 유실이 patch 앞 판에서 0이 됐습니다.</p>
+<p>보일 slide: <a href="#n46">slide 46</a> (2)</p>
+<h2 id="q13">13. LAYOUTRETURN이 먼저 닿는 원인이 예측이라면 유실의
+원인은 확정인가?</h2>
+<p>예측은 그 순서의 까닭 하나뿐입니다. 관측한 것은 셋입니다. 넷째
+실행에서 LAYOUTCOMMIT 14회 가운데 4회가 <code>NFS4ERR_BADLAYOUT</code>을
+받은 것, fsync 성공, 0으로 읽힌 block입니다. LAYOUTRETURN이
+LAYOUTCOMMIT보다 먼저 닿는 순서는 같은 실험의 계속 쓰는 조건에서 trace로
+관측했습니다. 거부가 닫힌 stateid 때문인 것과 client가 그 거부를
+성공으로 바꾸는 것은 code로 확인했습니다.</p>
+<p>보일 slide: <a href="#n38">slide 38</a> (4)</p>
+<h2 id="q14">14. log force 400회는 device flush 400회인가, 묶이지
+않나?</h2>
+<p>하나씩 부르면 같고, 같은 때 부르면 묶입니다. RPC 회계 실험에서는 M의
+log write가 400회로 log force 400회와 같았습니다. 학습 process 넷이
+동시에 쓰는 checkpoint 실험에서는 log force 520회에 iclog write가
+396회였습니다.</p>
+<p>보일 slide: <a href="#n29">slide 29</a> (3), <a href="#n18">slide
+18</a> (4)</p>
+<h2 id="q15">15. layout이 나간 file을 MDS 쪽이 바꿀 일이 실제로 있나,
+다른 client의 LAYOUTGET이 건 recall에서도 data가 사라지나?</h2>
+<p>유실은 MDS의 size 변경으로만 대조했습니다. 계기는 MDS에서의 write,
+fallocate, size 변경, reflink remap, scrub repair와 다른 client의
+LAYOUTGET입니다. 다른 계기에서는 data를 대조하지 않았습니다. AI
+workload에서 이런 연산이 얼마나 나는지는 보지 않았습니다.</p>
+<p>보일 slide: <a href="#n10">slide 10</a> (1), <a href="#n50">slide
+50</a> (0)</p>
+<h2 id="q16">16. 시간을 결론에 쓰지 않는다면서 “느렸다”, “멈췄다”는
+어떻게 아나?</h2>
+<p>같은 조건의 대조군과 code의 timer 상수에 대한 비만 썼습니다. 지연
+주입 실험의 64 KiB file 1,000개에서 layout / layout 없음 0.73, timer는
+46.1 / 45 = 1.03입니다. 초는 timer와 맞댈 때만 썼습니다.</p>
+<p>보일 slide: <a href="#n28">slide 28</a> (2), <a href="#n41">slide
+41</a> (2)</p>
+<h2 id="q17">17. 실제 학습 framework나 DLIO로 돌렸나?</h2>
+<p>DLIO로는 돌리지 않았습니다. 같은 I/O pattern을 script로 냈고, DLIO가
+이 환경에서 동작하는 것만 확인했습니다.</p>
+<p>보일 slide: <a href="#n58">slide 58</a></p>
+<h2 id="q18">18. patch 시험은 KASAN·lockdep kernel인데 그 결과를 믿어도
+되나, client 1대의 재기동 결과를 여러 client로 넓힐 수 있나?</h2>
+<p>전후를 같은 KASAN·lockdep kernel로 비교했습니다. 결과는 시간이 아니라
+0으로 읽힌 block 수입니다. 재기동은 client 1대로만 봤습니다. client가
+여럿일 때의 grace는 남은 질문입니다.</p>
+<p>보일 slide: <a href="#n46">slide 46</a> (1), <a href="#n39">slide
+39</a> (2)</p>
+</main>
+<script>
+// "I/O"처럼 낱말 사이의 /에서 줄이 갈리지 않게 word joiner를 넣는다(deck/setup/main.ts와 같은 규칙)
+{ const w = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT)
+  for (let n = w.nextNode(); n; n = w.nextNode()) if (!n.parentElement.closest('code')) n.data = n.data.replace(/(?<=[^\s\u2060])\/(?=[^\s\u2060])/g, '\u2060/\u2060') }
+const store = { get(k) { try { return localStorage.getItem(k) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch {} } }
+const heads = [...document.querySelectorAll('h2[id^="n"]')]
+const no = document.getElementById('no')
+// 위 막대 높이(휴대폰에서는 두 줄)만큼 이동 위치를 내린다
+const head = document.querySelector('header')
+const measure = () => document.documentElement.style.setProperty('--head', head.offsetHeight + 'px')
+measure(); addEventListener('resize', measure)
+const current = () => { const y = head.offsetHeight + 12; let i = 0; heads.forEach((h, k) => { if (h.getBoundingClientRect().top <= y) i = k }); return i }
+const go = (i) => { i = Math.max(0, Math.min(heads.length - 1, i)); heads[i].scrollIntoView({ block: 'start' }); history.replaceState(null, '', '#' + heads[i].id) }
+document.getElementById('prev').onclick = () => go(current() - 1)
+document.getElementById('next').onclick = () => go(current() + 1)
+no.onchange = () => { const i = heads.findIndex(h => h.id === 'n' + no.value); if (i >= 0) go(i) }
+let ticking = false
+addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; const i = current(); if (document.activeElement !== no) no.value = heads[i].id.slice(1); store.set('script-pos', heads[i].id) }) }, { passive: true })
+// 글자 크기
+let fs = Number(store.get('script-fs')) || 19
+const setFs = (v) => { fs = Math.max(14, Math.min(30, v)); document.documentElement.style.setProperty('--fs', fs + 'px'); store.set('script-fs', fs) }
+setFs(fs)
+// 글자 크기를 바꿔도 보던 slide에 머문다
+const resize = (d) => { const i = current(); setFs(fs + d); measure(); go(i) }
+document.getElementById('smaller').onclick = () => resize(-1)
+document.getElementById('bigger').onclick = () => resize(1)
+// 화면 꺼짐 방지. 다른 app에 다녀오면 풀리므로 돌아올 때 다시 잡는다
+const wake = document.getElementById('wake'); let lock = null
+const take = async () => { try { lock = await navigator.wakeLock.request('screen'); wake.setAttribute('aria-pressed', 'true'); lock.addEventListener('release', () => { if (document.visibilityState === 'visible' && wake.dataset.want !== '1') wake.setAttribute('aria-pressed', 'false') }) } catch { wake.textContent = '켜 둠 안 됨'; } }
+wake.onclick = async () => { if (wake.dataset.want === '1') { wake.dataset.want = ''; await lock?.release(); lock = null; wake.setAttribute('aria-pressed', 'false') } else { wake.dataset.want = '1'; await take() } }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && wake.dataset.want === '1') take() })
+if (!('wakeLock' in navigator)) wake.hidden = true
+// 처음 열 때: 주소의 #이 있으면 그곳, 없으면 마지막으로 본 slide
+addEventListener('load', () => { const id = location.hash.slice(1) || store.get('script-pos'); const el = id && document.getElementById(id); if (el) el.scrollIntoView({ block: 'start' }); no.value = heads[current()].id.slice(1) })
+</script>
+</body></html>
